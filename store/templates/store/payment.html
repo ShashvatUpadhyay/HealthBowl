@@ -1,0 +1,86 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-lg rounded-4 text-center p-5">
+                
+                <h2 class="fw-bold mb-3">Complete Your Payment</h2>
+                
+                {% if not razorpay_merchant_key %}
+                    <div class="alert alert-danger">ERROR: Razorpay Key is MISSING in views.py!</div>
+                {% endif %}
+                
+                {% if not razorpay_order_id %}
+                    <div class="alert alert-danger">ERROR: Order ID is MISSING from backend!</div>
+                {% endif %}
+
+                <div class="bg-light rounded-4 p-4 mb-4">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total Amount</span>
+                        <span class="fw-bold fs-5">₹{{ order.get_cart_total|floatformat:2 }}</span>
+                    </div>
+                </div>
+
+                <button id="rzp-button1" class="btn btn-dark w-100 rounded-pill py-3 fw-bold fs-5 shadow-sm">
+                    Pay Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    console.log("Sanity Check: Script is running.");
+
+    // 1. Check if Razorpay loaded
+    if (typeof Razorpay === 'undefined') {
+        alert("CRITICAL ERROR: Razorpay SDK failed to load. Check your internet connection.");
+    }
+
+    var options = {
+        "key": "{{ razorpay_merchant_key }}", 
+        "amount": "{{ razorpay_amount }}", 
+        "currency": "INR",
+        "name": "FreshBowl",
+        "description": "Order Payment",
+        "order_id": "{{ razorpay_order_id }}", 
+        "callback_url": "{{ callback_url }}",
+        "theme": { "color": "#00b894" }
+    };
+
+    console.log("Razorpay Options:", options);
+
+    // 2. Setup the Button Click
+    var rzp1 = new Razorpay(options);
+    
+    // Error handling for creation failure
+    rzp1.on('payment.failed', function (response){
+        alert("Payment Failed: " + response.error.description);
+    });
+
+    document.getElementById('rzp-button1').onclick = function(e){
+        console.log("Button Clicked!");
+        
+        // 3. Check for empty keys before opening
+        if(options.key === "" || options.key === "None") {
+            alert("STOP: Razorpay API Key is empty! Check settings.py");
+            e.preventDefault();
+            return;
+        }
+
+        if(options.order_id === "" || options.order_id === "None") {
+            alert("STOP: Order ID is empty! Backend creation failed.");
+            e.preventDefault();
+            return;
+        }
+
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock content %}

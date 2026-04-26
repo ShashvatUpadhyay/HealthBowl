@@ -1,0 +1,64 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="container">
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>My Order History</h2>
+            <hr>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.transaction_id|slice:":8" }}</td>
+                                <td>{{ order.date_ordered|date:"M d, Y" }}</td>
+                                <td>
+                                    <ul style="list-style: none; padding-left: 0; margin-bottom: 0;">
+                                    {% for item in order.orderitem_set.all %}
+                                        <li>• {{ item.product.product_name }} (x{{ item.quantity }})</li>
+                                    {% endfor %}
+                                    </ul>
+                                </td>
+                                <td><strong>₹{{ order.get_cart_total }}</strong></td>
+                                
+                                <td>
+                                    {% if order.status == 'Pending' %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% elif order.status == 'Processing' %}
+                                        <span class="badge bg-info text-dark">Processing</span>
+                                    {% elif order.status == 'Shipped' %}
+                                        <span class="badge bg-primary">Shipped</span>
+                                    {% elif order.status == 'Out for Delivery' %}
+                                        <span class="badge bg-primary">Out for Delivery</span>
+                                    {% elif order.status == 'Delivered' %}
+                                        <span class="badge bg-success">Delivered</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ order.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">You haven't placed any orders yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="{% url 'store' %}" class="btn btn-outline-dark mt-3">Back to Shopping</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

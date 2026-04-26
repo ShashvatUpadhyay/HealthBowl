@@ -1,0 +1,52 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    
+    <a href="{% url 'store' %}" class="btn btn-outline-dark rounded-pill px-4 mb-4">
+        &larr; Back to Menu
+    </a>
+
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+        <div class="row g-0">
+            
+            <div class="col-lg-6 bg-light d-flex align-items-center justify-content-center p-3 p-md-4">
+                <img src="{{ product.imageURL }}" class="img-fluid rounded-4" 
+                     style="max-height: 600px; width: 100%; object-fit: contain;" 
+                     alt="{{ product.name }}">
+            </div>
+            
+            <div class="col-lg-6 p-4 p-lg-5 d-flex flex-column bg-white">
+                
+                <div class="mb-4">
+                    <h1 class="fw-bold display-5 text-dark mb-2">{{ product.name }}</h1>
+                    <h2 class="text-success fw-bold display-6">₹{{ product.price|floatformat:2 }}</h2>
+                </div>
+
+                <div class="mb-4 flex-grow-1">
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">About this item</h5>
+                    
+                    <div class="text-muted pe-2" style="max-height: 400px; overflow-y: auto; line-height: 1.8; font-size: 1rem;">
+                        {{ product.description|linebreaks }}
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-top">
+                    <div class="d-grid gap-3 d-md-flex">
+                        <button data-product="{{product.id}}" data-action="add" class="btn btn-dark rounded-pill py-3 px-5 fw-bold flex-grow-1 add-btn update-cart shadow-sm">
+                            Add to Cart
+                        </button>
+                        
+                        <a href="{% url 'cart' %}" class="btn btn-outline-success rounded-pill py-3 px-5 fw-bold flex-grow-1">
+                            Go to Cart &rarr;
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
